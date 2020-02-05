@@ -42,15 +42,14 @@ def load_movies():
     
     Movie.query.delete()
 
-    dates_dict = {}
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         row = row.split("|")
         title = row[1][:-6]
         row[1] = title
-        movie_id, title, release_date, imdb_url = row[:4]
+        movie_id, title, release_date = row[:3]
+        imdb_url = row[4]
         release_date = datetime.strptime(release_date, '%d-%b-%Y')
-        dates_dict[movie_id] = release_date
 
 
         movie = Movie(movie_id=movie_id,
@@ -62,19 +61,18 @@ def load_movies():
         db.session.add(movie)
 
     db.session.commit()
-    return dates_dict
 
 
-def load_ratings(dates_dict):
+def load_ratings():
     """Load ratings from u.data into database."""
     # Read u.user file and insert data
     Rating.query.delete()
 
     for row in open("seed_data/u.data"):
         row = row.rstrip()
-        user_id, movie_id, score, created_at = row.split()
-        created_at = dates_dict[movie_id]
-        print(created_at)
+        user_id, movie_id, score = row.split()[:3]
+        created_at = datetime.now()
+       # print(created_at)
       #  created_at = datetime.strptime(created_at, "%d-%b-%Y")
        
         # movie = db.relationship('Movie')
@@ -117,7 +115,7 @@ if __name__ == "__main__":
 
     #Import different types of data
     load_users()
-    dates_dict = load_movies()
+    load_movies()
 
-    load_ratings(dates_dict)
+    load_ratings()
     set_val_user_id()

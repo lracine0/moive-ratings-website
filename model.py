@@ -43,7 +43,7 @@ class Rating(db.Model):
 
     __tablename__ = "ratings"
 
-    ratings_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    ratings_id = db.Column(db.Integer, autoincrement=True, primary_key=True) #MAKE INTO RATING_ID
     movie_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer)
     score = db.Column(db.Integer) #MAYBE CHANGE TO NUMER FROM INT WHO KNOWS
