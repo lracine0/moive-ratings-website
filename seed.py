@@ -40,14 +40,18 @@ def load_movies():
 # 1|Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)
 #|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
     
-    # User.query.delete()
+    Movie.query.delete()
 
+    dates_dict = {}
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         row = row.split("|")
         title = row[1][:-6]
         row[1] = title
         movie_id, title, release_date, imdb_url = row[:4]
+        release_date = datetime.strptime(release_date, '%d-%b-%Y')
+        dates_dict[movie_id] = release_date
+
 
         movie = Movie(movie_id=movie_id,
                       title=title,
@@ -55,23 +59,28 @@ def load_movies():
                       imdb_url=imdb_url)
 
 
-    #     db.session.add(movie)
+        db.session.add(movie)
 
-    # db.session.commit()
+    db.session.commit()
+    return dates_dict
 
 
-def load_ratings():
+def load_ratings(dates_dict):
     """Load ratings from u.data into database."""
     # Read u.user file and insert data
+    Rating.query.delete()
+
     for row in open("seed_data/u.data"):
         row = row.rstrip()
         user_id, movie_id, score, created_at = row.split()
+        created_at = dates_dict[movie_id]
+        print(created_at)
       #  created_at = datetime.strptime(created_at, "%d-%b-%Y")
        
-        movie = db.relationship('Movie')
-        movie.movie_id = movie_id
-        created_at = Movie.release_date
-        print(created_at)
+        # movie = db.relationship('Movie')
+        # movie.movie_id = movie_id
+        # created_at = Movie.release_date
+
 
         rating = Rating(movie_id=movie_id,
                         user_id=user_id,
@@ -81,9 +90,9 @@ def load_ratings():
        # db.session.query(Movie.release_date).all()
 
 
-    #     db.session.add(rating)
+        db.session.add(rating)
 
-    # db.session.commit()
+    db.session.commit()
 
 
 
@@ -100,15 +109,15 @@ def set_val_user_id():
     db.session.commit()
 
 
-# if __name__ == "__main__":
-#     connect_to_db(app)
+if __name__ == "__main__":
+    connect_to_db(app)
 
-#     # In case tables haven't been created, create them
-#     db.create_all()
+    # In case tables haven't been created, create them
+    db.create_all()
 
-#     #Import different types of data
-#     load_users()
-load_movies()
+    #Import different types of data
+    load_users()
+    dates_dict = load_movies()
 
-load_ratings()
-    # set_val_user_id()
+    load_ratings(dates_dict)
+    set_val_user_id()
