@@ -2,11 +2,12 @@
 
 from sqlalchemy import func
 from model import User
-# from model import Rating
-# from model import Movie
+from model import Rating
+from model import Movie
 
 from model import connect_to_db, db
 from server import app
+from datetime import datetime
 
 
 def load_users():
@@ -36,10 +37,54 @@ def load_users():
 
 def load_movies():
     """Load movies from u.item into database."""
+# 1|Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)
+#|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
+    
+    # User.query.delete()
+
+    for row in open("seed_data/u.item"):
+        row = row.rstrip()
+        row = row.split("|")
+        title = row[1][:-6]
+        row[1] = title
+        movie_id, title, release_date, imdb_url = row[:4]
+
+        movie = Movie(movie_id=movie_id,
+                      title=title,
+                      release_date=release_date,
+                      imdb_url=imdb_url)
+
+
+    #     db.session.add(movie)
+
+    # db.session.commit()
 
 
 def load_ratings():
     """Load ratings from u.data into database."""
+    # Read u.user file and insert data
+    for row in open("seed_data/u.data"):
+        row = row.rstrip()
+        user_id, movie_id, score, created_at = row.split()
+      #  created_at = datetime.strptime(created_at, "%d-%b-%Y")
+       
+        movie = db.relationship('Movie')
+        movie.movie_id = movie_id
+        created_at = Movie.release_date
+        print(created_at)
+
+        rating = Rating(movie_id=movie_id,
+                        user_id=user_id,
+                        score=score,
+                        created_at=created_at)
+
+       # db.session.query(Movie.release_date).all()
+
+
+    #     db.session.add(rating)
+
+    # db.session.commit()
+
 
 
 def set_val_user_id():
@@ -55,14 +100,15 @@ def set_val_user_id():
     db.session.commit()
 
 
-if __name__ == "__main__":
-    connect_to_db(app)
+# if __name__ == "__main__":
+#     connect_to_db(app)
 
-    # In case tables haven't been created, create them
-    db.create_all()
+#     # In case tables haven't been created, create them
+#     db.create_all()
 
-    # Import different types of data
-    load_users()
-    load_movies()
-    load_ratings()
-    set_val_user_id()
+#     #Import different types of data
+#     load_users()
+load_movies()
+
+load_ratings()
+    # set_val_user_id()
