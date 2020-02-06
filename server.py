@@ -38,6 +38,40 @@ def user_list():
 
     # EMAIL IS NOT BEING SENT 
 
+@app.route('/user_signed_up')
+def user_signed_up():
+
+    # fname = request.args.get("fname")
+    email_html = request.args.get("email")
+    password_html = request.args.get("password")
+    # age = request.args.get("age")
+    # zipcode = request.args.get("zipcode")
+
+    email_check = User.query.filter_by(email=email_html).all()
+    password_check = User.query.filter_by(password=password_html).all()
+
+    if email_check and password_check:
+        ## add their user id to the flask session
+        client_id = User.user_id
+        session['client_id'] = client_id
+        return render_template("homepage.html")
+        ## route to homepage
+
+    elif email_check:
+        ##flash that password isn't correct
+        # print("email checked out, not password though")
+        flash("password incorrect!!!!! TRY AGAIN FOOL")
+
+    else:
+        ##direct user to sign up page
+    # if email == Users.query.filter
+        #print("nothing matched with anything")
+        flash("please enter all of the information to be signed up
+                to have access to movie ratings")
+
+        return render_template("signed_up.html", fname=fname, email=email, 
+                            password=password, age=age, zipcode= zipcode)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
