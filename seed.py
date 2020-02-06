@@ -45,9 +45,12 @@ def load_movies():
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         row = row.split("|")
-        title = row[1][:-6]
-        row[1] = title
+        # row[1] = row[1][:-6]
+        #row[1] = title
         movie_id, title, release_date = row[:3]
+        title = title[:-7]
+        # print(title)
+        # print(len(title))
         imdb_url = row[4]
         release_date = datetime.strptime(release_date, '%d-%b-%Y')
 
@@ -83,7 +86,7 @@ def load_ratings():
         rating = Rating(movie_id=movie_id,
                         user_id=user_id,
                         score=score,
-                        created_at=created_at)
+                        created_at=created_at) #TIMESTAMP IS DIFFERENT
 
        # db.session.query(Movie.release_date).all()
 

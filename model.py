@@ -44,15 +44,27 @@ class Rating(db.Model):
     __tablename__ = "ratings"
 
     ratings_id = db.Column(db.Integer, autoincrement=True, primary_key=True) #MAKE INTO RATING_ID
-    movie_id = db.Column(db.Integer)
-    user_id = db.Column(db.Integer)
+    movie_id = db.Column(db.Integer,
+                         db.ForeignKey('movies.movie_id'))
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.user_id'))
     score = db.Column(db.Integer) #MAYBE CHANGE TO NUMER FROM INT WHO KNOWS
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now) #.now() or .now WHO KNOWS
 
+    user = db.relationship("User", backref=db.backref("ratings", order_by=ratings_id))
+    movie = db.relationship("Movie", backref=db.backref("ratings", order_by=ratings_id))
 
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return f"""<Rating rating_id={self.ratings_id} 
+                   movie_id={self.movie_id} 
+                   user_id={self.user_id} 
+                   score={self.score}>"""
 
 ##############################################################################
 # Helper functions
+
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
